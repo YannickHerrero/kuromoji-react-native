@@ -36,12 +36,27 @@ function TokenizerBuilder(option) {
 
 /**
  * Build Tokenizer instance by asynchronous manner
- * @param {TokenizerBuilder~onLoad} callback Callback function
+ * @param {TokenizerBuilder~onLoad} [callback] Callback function (optional — returns a Promise if omitted)
+ * @returns {Promise<Tokenizer>|undefined} Promise if no callback is provided
  */
 TokenizerBuilder.prototype.build = function (callback) {
     var loader = new DictionaryLoader(this.dic_path);
-    loader.load(function (err, dic) {
-        callback(err, new Tokenizer(dic));
+
+    if (typeof callback === "function") {
+        loader.load(function (err, dic) {
+            callback(err, new Tokenizer(dic));
+        });
+        return;
+    }
+
+    return new Promise(function (resolve, reject) {
+        loader.load(function (err, dic) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(new Tokenizer(dic));
+            }
+        });
     });
 };
 

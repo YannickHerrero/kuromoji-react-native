@@ -18,7 +18,7 @@
 "use strict";
 
 var Tokenizer = require("./Tokenizer");
-var DictionaryLoader = require("./loader/NodeDictionaryLoader");
+var DictionaryLoader = require("./loader/ReactNativeDictionaryLoader");
 
 /**
  * TokenizerBuilder create Tokenizer instance.

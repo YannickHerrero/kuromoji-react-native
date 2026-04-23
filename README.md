@@ -1,9 +1,9 @@
 kuromoji-react-native
 =====================
 
-React Native (Expo) compatible fork of [kuromoji.js](https://github.com/takuyaa/kuromoji.js) - a JavaScript implementation of a Japanese morphological analyzer.
+React Native (Expo) compatible fork of [kuromoji.js](https://github.com/takuyaa/kuromoji.js), a JavaScript implementation of a Japanese morphological analyzer.
 
-This fork replaces the Node.js and browser-specific dictionary loading with a `fetch()`-based loader that works in React Native's Hermes engine. The core tokenizer is unchanged - it was already pure JavaScript.
+This fork replaces the Node.js and browser-specific dictionary loading with a `fetch()`-based loader that works in React Native's Hermes engine. The core tokenizer is unchanged, as it was already pure JavaScript.
 
 
 What changed from upstream
@@ -11,9 +11,9 @@ What changed from upstream
 
 Only the dictionary loading layer was modified (3 files). The tokenizer core (~20 files) is untouched.
 
-- `DictionaryLoader.js` - Removed `require("path")`, added `resolvePath()` supporting both URL strings and asset maps
-- `ReactNativeDictionaryLoader.js` - New loader using `fetch()` + `zlibjs` (works with both remote URLs and local `file://` URIs)
-- `TokenizerBuilder.js` - Imports the React Native loader by default
+- `DictionaryLoader.js`: removed `require("path")`, added `resolvePath()` supporting both URL strings and asset maps
+- `ReactNativeDictionaryLoader.js`: new loader using `fetch()` + `zlibjs`, works with both remote URLs and local `file://` URIs
+- `TokenizerBuilder.js`: imports the React Native loader by default
 
 
 Installation
@@ -127,7 +127,7 @@ See `src/util/IpadicFormatter.js` for the full definition.
 Memory usage
 ------------
 
-Once loaded, the dictionary data uses ~40MB of RAM. This is fine for most apps - load the tokenizer once when needed and keep it in memory for the session.
+Once loaded, the dictionary data uses ~40MB of RAM. This is fine for most apps: load the tokenizer once when needed and keep it in memory for the session.
 
 
 License

@@ -19,19 +19,11 @@ Only the dictionary loading layer was modified (3 files). The tokenizer core (~2
 Installation
 ------------
 
-Install from the git repository:
+Install from GitHub:
 
-    npm install https://github.com/nickerherrero/kuromoji-react-native
+    npx expo install kuromoji-react-native@github:YannickHerrero/kuromoji-react-native
 
-
-Dictionary files
-----------------
-
-The tokenizer needs 12 dictionary files (~17MB compressed). They are included in the `dict/` directory of this repository.
-
-Copy them into your Expo project:
-
-    cp -r node_modules/kuromoji-react-native/dict/ assets/dict/
+The dictionary files (~17MB compressed) are included in the package under `dict/`.
 
 
 Setup
@@ -55,18 +47,18 @@ Metro requires static `require()` calls, so each file must be listed explicitly:
 import { Asset } from 'expo-asset';
 
 const DICT_ASSETS = {
-  'base.dat.gz': require('./assets/dict/base.dat.gz'),
-  'check.dat.gz': require('./assets/dict/check.dat.gz'),
-  'tid.dat.gz': require('./assets/dict/tid.dat.gz'),
-  'tid_pos.dat.gz': require('./assets/dict/tid_pos.dat.gz'),
-  'tid_map.dat.gz': require('./assets/dict/tid_map.dat.gz'),
-  'cc.dat.gz': require('./assets/dict/cc.dat.gz'),
-  'unk.dat.gz': require('./assets/dict/unk.dat.gz'),
-  'unk_pos.dat.gz': require('./assets/dict/unk_pos.dat.gz'),
-  'unk_map.dat.gz': require('./assets/dict/unk_map.dat.gz'),
-  'unk_char.dat.gz': require('./assets/dict/unk_char.dat.gz'),
-  'unk_compat.dat.gz': require('./assets/dict/unk_compat.dat.gz'),
-  'unk_invoke.dat.gz': require('./assets/dict/unk_invoke.dat.gz'),
+  'base.dat.gz': require('kuromoji-react-native/dict/base.dat.gz'),
+  'check.dat.gz': require('kuromoji-react-native/dict/check.dat.gz'),
+  'tid.dat.gz': require('kuromoji-react-native/dict/tid.dat.gz'),
+  'tid_pos.dat.gz': require('kuromoji-react-native/dict/tid_pos.dat.gz'),
+  'tid_map.dat.gz': require('kuromoji-react-native/dict/tid_map.dat.gz'),
+  'cc.dat.gz': require('kuromoji-react-native/dict/cc.dat.gz'),
+  'unk.dat.gz': require('kuromoji-react-native/dict/unk.dat.gz'),
+  'unk_pos.dat.gz': require('kuromoji-react-native/dict/unk_pos.dat.gz'),
+  'unk_map.dat.gz': require('kuromoji-react-native/dict/unk_map.dat.gz'),
+  'unk_char.dat.gz': require('kuromoji-react-native/dict/unk_char.dat.gz'),
+  'unk_compat.dat.gz': require('kuromoji-react-native/dict/unk_compat.dat.gz'),
+  'unk_invoke.dat.gz': require('kuromoji-react-native/dict/unk_invoke.dat.gz'),
 };
 
 export async function loadDictAssets() {

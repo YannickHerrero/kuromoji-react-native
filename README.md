@@ -1,6 +1,8 @@
 kuromoji-react-native
 =====================
 
+[![npm version](https://badge.fury.io/js/kuromoji-react-native.svg)](https://www.npmjs.com/package/kuromoji-react-native)
+
 React Native (Expo) compatible fork of [kuromoji.js](https://github.com/takuyaa/kuromoji.js), a JavaScript implementation of a Japanese morphological analyzer.
 
 This fork replaces the Node.js and browser-specific dictionary loading with a `fetch()`-based loader that works in React Native's Hermes engine. The core tokenizer is unchanged, as it was already pure JavaScript.
@@ -19,9 +21,9 @@ Only the dictionary loading layer was modified (3 files). The tokenizer core (~2
 Installation
 ------------
 
-Install from GitHub:
+Install from npm:
 
-    npx expo install kuromoji-react-native@github:YannickHerrero/kuromoji-react-native
+    npx expo install kuromoji-react-native
 
 The dictionary files (~17MB compressed) are included in the package under `dict/`.
 

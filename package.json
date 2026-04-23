@@ -1,11 +1,8 @@
 {
-  "name": "kuromoji",
+  "name": "kuromoji-react-native",
   "description": "JavaScript implementation of Japanese morphological analyzer",
   "version": "0.1.2",
   "author": "Takuya Asano <takuya.a@gmail.com>",
-  "browser": {
-    "./src/loader/NodeDictionaryLoader.js": "./src/loader/BrowserDictionaryLoader.js"
-  },
   "bugs": {
     "url": "https://github.com/takuyaa/kuromoji.js/issues"
   },

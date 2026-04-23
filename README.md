@@ -1,104 +1,141 @@
-kuromoji.js
-===========
+kuromoji-react-native
+=====================
 
-[![Build Status](https://travis-ci.org/takuyaa/kuromoji.js.svg?branch=master)](https://travis-ci.org/takuyaa/kuromoji.js)
-[![Coverage Status](https://coveralls.io/repos/github/takuyaa/kuromoji.js/badge.svg?branch=master)](https://coveralls.io/github/takuyaa/kuromoji.js?branch=master)
-[![npm version](https://badge.fury.io/js/kuromoji.svg)](https://badge.fury.io/js/kuromoji)
-[![dependencies](https://david-dm.org/takuyaa/kuromoji.js.svg)](https://david-dm.org/takuyaa/kuromoji.js)
-[![Code Climate](https://codeclimate.com/github/takuyaa/kuromoji.js/badges/gpa.svg)](https://codeclimate.com/github/takuyaa/kuromoji.js)
-[![Downloads](https://img.shields.io/npm/dm/kuromoji.svg)](https://www.npmjs.com/package/kuromoji)
+React Native (Expo) compatible fork of [kuromoji.js](https://github.com/takuyaa/kuromoji.js) — a JavaScript implementation of a Japanese morphological analyzer.
 
-JavaScript implementation of Japanese morphological analyzer.
-This is a pure JavaScript porting of [Kuromoji](https://www.atilika.com/ja/kuromoji/).
-
-You can see how kuromoji.js works in [demo site](https://takuyaa.github.io/kuromoji.js/demo/tokenize.html).
+This fork replaces the Node.js and browser-specific dictionary loading with a `fetch()`-based loader that works in React Native's Hermes engine. The core tokenizer is unchanged — it was already pure JavaScript.
 
 
-Directory
----------
+What changed from upstream
+--------------------------
 
-Directory tree is as follows:
+Only the dictionary loading layer was modified (3 files). The tokenizer core (~20 files) is untouched.
 
-    build/
-      kuromoji.js -- JavaScript file for browser (Browserified)
-    demo/         -- Demo
-    dict/         -- Dictionaries for tokenizer (gzipped)
-    example/      -- Examples to use in Node.js
-    src/          -- JavaScript source
-    test/         -- Unit test
+- `DictionaryLoader.js` — Removed `require("path")`, added `resolvePath()` supporting both URL strings and asset maps
+- `ReactNativeDictionaryLoader.js` — New loader using `fetch()` + `zlibjs` (works with both remote URLs and local `file://` URIs)
+- `TokenizerBuilder.js` — Imports the React Native loader by default
 
 
-Usage
+Installation
+------------
+
+Install from the git repository:
+
+    npm install https://github.com/nickerherrero/kuromoji-react-native
+
+
+Dictionary files
+----------------
+
+The tokenizer needs 12 dictionary files (~17MB compressed). They are included in the `dict/` directory of this repository.
+
+Copy them into your Expo project:
+
+    cp -r node_modules/kuromoji-react-native/dict/ assets/dict/
+
+
+Setup
 -----
 
-You can tokenize sentences with only 5 lines of code.
-If you need working examples, you can see the files under the demo or example directory.
+### 1. Configure Metro to bundle .gz files
 
+```js
+// metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+const config = getDefaultConfig(__dirname);
+config.resolver.assetExts.push('gz');
+module.exports = config;
+```
 
-### Node.js
+### 2. Register dictionary assets
 
-Install with npm package manager:
+Metro requires static `require()` calls, so each file must be listed explicitly:
 
-    npm install kuromoji
+```js
+import { Asset } from 'expo-asset';
 
-Load this library as follows:
+const DICT_ASSETS = {
+  'base.dat.gz': require('./assets/dict/base.dat.gz'),
+  'check.dat.gz': require('./assets/dict/check.dat.gz'),
+  'tid.dat.gz': require('./assets/dict/tid.dat.gz'),
+  'tid_pos.dat.gz': require('./assets/dict/tid_pos.dat.gz'),
+  'tid_map.dat.gz': require('./assets/dict/tid_map.dat.gz'),
+  'cc.dat.gz': require('./assets/dict/cc.dat.gz'),
+  'unk.dat.gz': require('./assets/dict/unk.dat.gz'),
+  'unk_pos.dat.gz': require('./assets/dict/unk_pos.dat.gz'),
+  'unk_map.dat.gz': require('./assets/dict/unk_map.dat.gz'),
+  'unk_char.dat.gz': require('./assets/dict/unk_char.dat.gz'),
+  'unk_compat.dat.gz': require('./assets/dict/unk_compat.dat.gz'),
+  'unk_invoke.dat.gz': require('./assets/dict/unk_invoke.dat.gz'),
+};
 
-    var kuromoji = require("kuromoji");
+export async function loadDictAssets() {
+  await Asset.loadAsync(Object.values(DICT_ASSETS));
+  const assetMap = {};
+  for (const [name, mod] of Object.entries(DICT_ASSETS)) {
+    assetMap[name] = Asset.fromModule(mod).localUri;
+  }
+  return assetMap;
+}
+```
 
-You can prepare tokenizer like this:
+### 3. Use the tokenizer
 
-    kuromoji.builder({ dicPath: "path/to/dictionary/dir/" }).build(function (err, tokenizer) {
-        // tokenizer is ready
-        var path = tokenizer.tokenize("すもももももももものうち");
-        console.log(path);
-    });
+```js
+import kuromoji from 'kuromoji-react-native';
+import { loadDictAssets } from './dict-assets'; // the file from step 2
 
+const assetMap = await loadDictAssets();
 
+kuromoji.builder({ dicPath: assetMap }).build((err, tokenizer) => {
+  if (err) throw err;
+  const tokens = tokenizer.tokenize("すもももももももものうち");
+  console.log(tokens);
+});
+```
 
-### Browser
+You can also pass a remote URL base path instead of an asset map:
 
-You only need the build/kuromoji.js and dict/*.dat.gz files
-
-Install with Bower package manager:
-
-    bower install kuromoji
-
-Or you can use the kuromoji.js file and dictionary files from the GitHub repository.
-
-In your HTML:
-
-    <script src="url/to/kuromoji.js"></script>
-
-In your JavaScript:
-
-    kuromoji.builder({ dicPath: "/url/to/dictionary/dir/" }).build(function (err, tokenizer) {
-        // tokenizer is ready
-        var path = tokenizer.tokenize("すもももももももものうち");
-        console.log(path);
-    });
+```js
+kuromoji.builder({ dicPath: "https://cdn.example.com/dict/" }).build((err, tokenizer) => {
+  // ...
+});
+```
 
 
 API
 ---
 
-The function tokenize() returns an JSON array like this:
+The `tokenize()` function returns a JSON array:
 
-    [ {
-        word_id: 509800,          // 辞書内での単語ID
-        word_type: 'KNOWN',       // 単語タイプ(辞書に登録されている単語ならKNOWN, 未知語ならUNKNOWN)
-        word_position: 1,         // 単語の開始位置
-        surface_form: '黒文字',    // 表層形
-        pos: '名詞',               // 品詞
-        pos_detail_1: '一般',      // 品詞細分類1
-        pos_detail_2: '*',        // 品詞細分類2
-        pos_detail_3: '*',        // 品詞細分類3
-        conjugated_type: '*',     // 活用型
-        conjugated_form: '*',     // 活用形
-        basic_form: '黒文字',      // 基本形
-        reading: 'クロモジ',       // 読み
-        pronunciation: 'クロモジ'  // 発音
-      } ]
+```json
+[{
+    "word_id": 509800,
+    "word_type": "KNOWN",
+    "word_position": 1,
+    "surface_form": "黒文字",
+    "pos": "名詞",
+    "pos_detail_1": "一般",
+    "pos_detail_2": "*",
+    "pos_detail_3": "*",
+    "conjugated_type": "*",
+    "conjugated_form": "*",
+    "basic_form": "黒文字",
+    "reading": "クロモジ",
+    "pronunciation": "クロモジ"
+}]
+```
 
-(This is defined in src/util/IpadicFormatter.js)
+See `src/util/IpadicFormatter.js` for the full definition.
 
-See also [JSDoc page](https://takuyaa.github.io/kuromoji.js/jsdoc/) in details.
+
+Memory usage
+------------
+
+Once loaded, the dictionary data uses ~40MB of RAM. This is fine for most apps — load the tokenizer once when needed and keep it in memory for the session.
+
+
+License
+-------
+
+Apache-2.0 (same as upstream kuromoji.js)

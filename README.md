@@ -86,18 +86,21 @@ import kuromoji from 'kuromoji-react-native';
 import { loadDictAssets } from './dict-assets'; // the file from step 2
 
 const assetMap = await loadDictAssets();
-
-kuromoji.builder({ dicPath: assetMap }).build((err, tokenizer) => {
-  if (err) throw err;
-  const tokens = tokenizer.tokenize("すもももももももものうち");
-  console.log(tokens);
-});
+const tokenizer = await kuromoji.builder({ dicPath: assetMap }).build();
+const tokens = tokenizer.tokenize("すもももももももものうち");
+console.log(tokens);
 ```
 
 You can also pass a remote URL base path instead of an asset map:
 
 ```js
-kuromoji.builder({ dicPath: "https://cdn.example.com/dict/" }).build((err, tokenizer) => {
+const tokenizer = await kuromoji.builder({ dicPath: "https://cdn.example.com/dict/" }).build();
+```
+
+A callback-based API is also supported:
+
+```js
+kuromoji.builder({ dicPath: assetMap }).build((err, tokenizer) => {
   // ...
 });
 ```

@@ -2,7 +2,7 @@
   "name": "kuromoji-react-native",
   "description": "React Native (Expo) compatible Japanese morphological analyzer, fork of kuromoji.js",
   "version": "1.0.0",
-  "author": "Yannick Herrero <yannick.herrero@gmail.com>",
+  "author": "yannickhrr",
   "contributors": [
     "Takuya Asano <takuya.a@gmail.com>"
   ],
